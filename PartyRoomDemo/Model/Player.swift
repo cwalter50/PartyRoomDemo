@@ -1,5 +1,3 @@
-
-
 //
 //  Player.swift
 //  GameRoomDemo
@@ -10,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-class Player: Identifiable {
+class Player: Identifiable, Codable {
     var id: String
     var name: String
     var created: Double

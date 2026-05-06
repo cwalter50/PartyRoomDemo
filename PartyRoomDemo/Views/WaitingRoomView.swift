@@ -71,6 +71,7 @@ struct WaitingRoomView: View {
 #Preview {
     NavigationStack {
         WaitingRoomView()
+            .environment(GameViewModel())
 //        WaitingRoomView(room: DeveloperPreview.instance.sampleRoom)
     }
 }

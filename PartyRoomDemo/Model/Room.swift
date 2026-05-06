@@ -5,9 +5,10 @@
 //  Created by Christopher Walter on 4/29/26.
 //
 import SwiftUI
+import FirebaseFirestore
 
 
-class Room: Identifiable {
+class Room: Identifiable, Codable {
     var id: String
     var roomName: String
     var created: Double

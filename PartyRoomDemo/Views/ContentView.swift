@@ -10,9 +10,11 @@ import Firebase
 
 struct ContentView: View {
     
+    @Environment(GameViewModel.self) var vm: GameViewModel
+    
     @State var roomCode: String = ""
     
-    @State var foundRoom = false // trigger segue to signinview
+    @State var foundRoom = false // trigger segue to playersigninview
     
     @State var showErrorAlert = false
     
@@ -61,9 +63,19 @@ struct ContentView: View {
     func findRoomOnFirebase()
     {
         
+        Task {
+            let result = try await vm.loadRoomFromFirestore(roomCode: roomCode)
+            if result == true {
+                foundRoom = true // trigger naviagtion to PlayerSignin
+            } else {
+                showErrorAlert.toggle() // trigger error alert
+            }
+        }
+//        showErrorAlert.toggle()
     }
 }
 
 #Preview {
     ContentView()
+        .environment(GameViewModel())
 }

@@ -22,10 +22,13 @@ struct PartyRoomDemoApp: App {
     
     // register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-
+    
+    @State var vm: GameViewModel = GameViewModel()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(vm)
         }
     }
 }

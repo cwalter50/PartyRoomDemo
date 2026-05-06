@@ -60,6 +60,7 @@ struct PlayerSignInView: View {
 
 #Preview{
     PlayerSignInView()
+        .environment(GameViewModel())
 }
 
 

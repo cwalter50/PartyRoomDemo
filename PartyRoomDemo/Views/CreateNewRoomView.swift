@@ -9,12 +9,17 @@ import SwiftUI
 import Firebase
 
 struct CreateNewRoomView: View {
+    
+    @Environment(GameViewModel.self) var vm: GameViewModel
+    
     @State var roomName: String = ""
     
     @State var roomCode: String
     
-    @State var room: Room = Room()
     @State var isRoomCreated = false
+    
+    @State var showErrorAlert: Bool = false
+    @State var errorMessage: String = ""
     
     init()
     {
@@ -44,43 +49,45 @@ struct CreateNewRoomView: View {
                     Image(systemName: "arrow.clockwise")
                 }
             }
-            .navigationDestination(isPresented: $isRoomCreated) {
+            .navigationDestination(isPresented: $isRoomCreated, destination: {
                 PlayerSignInView()
-            }
-
+            })
+            
             Button("Create Room")
             {
                 createRoom()
             }
             .disabled(roomName == "")
+            
             Spacer()
 
         }
         .padding()
         .font(.title)
         .navigationTitle("Create New Room")
-        
+        .alert(isPresented: $showErrorAlert) {
+            Alert(
+                title: Text("Error"),
+                message: Text("\(errorMessage)"),
+                dismissButton: .default(Text("OK")){
+                    errorMessage = ""
+                }
+            )
+        }
     }
     
     // Add Method to save new room to Firebase!!!
     func createRoom()
     {
-        room = Room(id: self.roomCode, roomName: self.roomName, created: Double(Date().timeIntervalSince1970))
-        
-        let theData = room.toDictionaryValues()
-        
-        let db = Firestore.firestore()
-        db.collection("rooms").document("\(roomCode)").setData(theData) { error in
-            if let err = error
-            {
-                print("Error in saving data: \(err)")
+        Task {
+            let result = try await vm.createRoomInFirestore(roomId: roomCode, roomName: roomName)
+            if let err = result {
+                print("DEBUG: Failed to create room in Firestore \(err.localizedDescription)")
+            } else {
+                isRoomCreated = true // trigger naviagtion to playersignin
             }
-            else {
-                print("Sucessfully saved data")
-                isRoomCreated.toggle() // this will trigger the navigationLink to go to SignInView
-            }
-            
         }
+        
     }
     
     func getNewRoomCode()
@@ -95,5 +102,6 @@ struct CreateNewRoomView: View {
     NavigationStack {
         CreateNewRoomView()
     }
+    .environment(GameViewModel())
 }
 
